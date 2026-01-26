@@ -1,4 +1,4 @@
-Package week2;
+package COMPRO2.week2;
 
 public class Clothweek2 {
     

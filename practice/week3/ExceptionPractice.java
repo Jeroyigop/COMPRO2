@@ -16,7 +16,9 @@ public class ExceptionPractice {
             try{ System.out.println("enter a number ");
             number = sc.nextInt();
         System.out.println("you entered: " + number);
-        } catch (Exception e){
+        } 
+        catch (Exception e)
+        {
             System.out.println("Invalid input, please enter an integer.");
         }
         return number;
@@ -26,7 +28,7 @@ public class ExceptionPractice {
         
 
     
-    }
+    } 
     
 
     

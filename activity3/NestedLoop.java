@@ -5,6 +5,7 @@ public class NestedLoop {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+        
 
         int mainChoice;
         int gradeChoice;

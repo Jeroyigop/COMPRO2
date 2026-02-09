@@ -1,19 +1,34 @@
 package activity4;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
-public class CsvAp {
+public class GradeMenu {
     static String[] names;
     static double[][] healthData;
 
     public static void main(String[] args) {
         names = new String[50];
-        healthData = new double[50][2];
+        healthData = new double[50][3];
 
         Scanner sc = new Scanner(System.in);
+           try{
+            BufferedReader br = new BufferedReader(new FileReader("data.csv"));
+            String line;
+            br.readLine(); //discard header
+            int i = 0; //array counter
+            while((line = br.readLine()) != null){
+                //convert the `line` into String array
+                String[] arr = line.split(",");
+                Grade g = new Grade();
+                g.subject = sc.nextFloat();
+                g.prelim = sc.nextFloat();
+                g.midterm = sc.nextFloat();
+                g.add(g); 
 
         for (int r = 0; r < 3; r++) {
             System.out.print("Enter name: ");
@@ -63,5 +78,7 @@ public class CsvAp {
         }
 
         System.out.println(sb.toString());
+    }
+}
     }
 }

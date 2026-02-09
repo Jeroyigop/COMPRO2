@@ -1,45 +1,34 @@
 package activity4;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.lang.ArrayIndexOutOfBoundsException;
 
-public class GradeMenu {
-    static double[][] grade; 
-    static String[] subject;
-    static int[] prelim;
-    static int[] midterm;
-    static int[] Final;
+public class CsvAp {
+    static String[] names;
+    static double[][] healthData;
 
     public static void main(String[] args) {
-        subject = new String[50];
-        grade = new double[9][9];
+        names = new String[50];
+        healthData = new double[50][2];
+
         Scanner sc = new Scanner(System.in);
 
-        for (int r = 0; r < 5; r++) {  
-            System.out.print("Enter Subject name: ");
-            subject[r] = sc.nextLine();
+        for (int r = 0; r < 3; r++) {
+            System.out.print("Enter name: ");
+            names[r] = sc.nextLine();
 
-            System.out.print("Enter Prelim: ");
+            System.out.print("Enter weight: ");
             try {
-                grade[r][0] = sc.nextDouble();
+                healthData[r][0] = sc.nextDouble();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid number");
             }
 
-            System.out.print("Enter Midterm: ");
+            System.out.print("Enter height: ");
             try {
-                grade[r][1] = sc.nextDouble();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid number");
-            }
-
-            System.out.print("Enter Final: ");
-            try {
-                grade[r][2] = sc.nextDouble();
+                healthData[r][1] = sc.nextDouble();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid number");
             }
@@ -47,29 +36,29 @@ public class GradeMenu {
             sc.nextLine();
             System.out.println();
         }
-
         writeData();
+
     }
 
     public static void writeData() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("subject,prelim,midterm,Final\n");
-        for (int r = 0; r < subject.length; r++) {
-            if (grade[r] == null)
+        sb.append("Name,Weight,Height\n");
+        for (int r = 0; r < names.length; r++) {
+            if(names[r] == null) 
                 break;
 
-            sb.append(subject[r]);
-            for (int c = 0; c < grade[r].length; c++) {
-                sb.append(",").append(grade[r][c]);
+            sb.append(names[r]);
+            for (int c = 0; c < healthData[r].length; c++) {
+                sb.append(",").append(healthData[r][c]);
             }
             sb.append("\n");
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data.csv"))) {
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("data.csv"))){
             bw.write(sb.toString());
             bw.flush();
-        } catch (IOException e) {
+        }catch(IOException e){
             System.out.println("Error: " + e.getMessage());
         }
 

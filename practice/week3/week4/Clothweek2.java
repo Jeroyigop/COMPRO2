@@ -1,4 +1,4 @@
-package COMPRO2.week2;
+package practice.week3.week4;
 
 public class Clothweek2 {
     

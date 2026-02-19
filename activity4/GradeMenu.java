@@ -1,64 +1,58 @@
-package activity4;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.InputMismatchException;
-import java.util.*;
+import java.util.Scanner;
 
 public class GradeMenu {
     static String[] names;
     static double[][] healthData;
+
 
     public static void main(String[] args) {
         names = new String[50];
         healthData = new double[50][3];
 
         Scanner sc = new Scanner(System.in);
-           try{
-            BufferedReader br = new BufferedReader(new FileReader("data.csv"));
-            String line;
-            br.readLine(); //discard header
-            int i = 0; //array counter
-            while((line = br.readLine()) != null){
-                //convert the `line` into String array
-                String[] arr = line.split(",");
-                Grade g = new Grade();
-                g.subject = sc.nextFloat();
-                g.prelim = sc.nextFloat();
-                g.midterm = sc.nextFloat();
-                g.add(g); 
+       
 
-        for (int r = 0; r < 3; r++) {
-            System.out.print("Enter name: ");
+        for (int r = 0; r < 5; r++) {
+            System.out.print("Enter Subject: ");
             names[r] = sc.nextLine();
 
-            System.out.print("Enter weight: ");
+            System.out.print("Enter Prelim: ");
             try {
                 healthData[r][0] = sc.nextDouble();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid number");
             }
 
-            System.out.print("Enter height: ");
+            System.out.print("Enter Midterm: ");
             try {
                 healthData[r][1] = sc.nextDouble();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid number");
             }
+            System.out.print("Enter Finals: ");
+            try{
+                healthData[r][2] = sc.nextDouble();
+            }catch(InputMismatchException e){
+                System.out.println("Invalid Number");
+            }
 
             sc.nextLine();
             System.out.println();
+            
         }
         writeData();
-
+    
+    
     }
 
     public static void writeData() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Name,Weight,Height\n");
+        sb.append("Subject,Prelim,Midterm,Finals\n");
         for (int r = 0; r < names.length; r++) {
             if(names[r] == null) 
                 break;
@@ -78,7 +72,5 @@ public class GradeMenu {
         }
 
         System.out.println(sb.toString());
-    }
-}
     }
 }

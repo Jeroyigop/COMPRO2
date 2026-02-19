@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Activity1 {
+public class SumElements {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int[][] theater = new int[5][8];

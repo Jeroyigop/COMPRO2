@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class Array1 {
+public class TheatherSeating {
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
 
@@ -15,10 +15,10 @@ public class Array1 {
           for (int i = 0; i < nums.length; i++) {
               if (index == nums[i]){
                   System.out.println(i);
-              }
+            }
               
               
-          }
-         
         }
+         
     }
+}

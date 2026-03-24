@@ -72,7 +72,7 @@ public class FinalHangMan { // Main class for the Hangman game
 
 
         String word = randomwords(words); // Pick a random word
-        String HiddenWord = xInitializeHiddenWord(word); // Hide the word with *
+        String HiddenWord = InitializeHiddenWord(word); // Hide the word with *
 
 
         // Array to store letters already guessed
@@ -113,11 +113,11 @@ public class FinalHangMan { // Main class for the Hangman game
 
 
             // Store guessed letter
-            xUpdateGuessedLetters(guess, GuessedLetters, GuessIndex++);
+            UpdateGuessedLetters(guess, GuessedLetters, GuessIndex++);
 
 
             // Check if guess is correct
-            if (xIsGuessCorrect(word, guess)) {
+            if (IsGuessCorrect(word, guess)) {
                 HiddenWord = xUpdateHiddenWord(word, HiddenWord, guess);
                 score = Math.min(score + 1, xMaxScore); // Increase score
                 System.out.println("Correct!");
@@ -157,15 +157,14 @@ public class FinalHangMan { // Main class for the Hangman game
     }
 
 
-    // =====================
-    // Selects a random word from the array
+
     public static String randomwords(String[] words) {
         return words[(int)(Math.random() * words.length)];
     }
 
 
-    // Creates a hidden version of the word using *
-    public static String xInitializeHiddenWord(String word) {
+
+    public static String InitializeHiddenWord(String word) {
         String hidden = "";
         for (int i = 0; i < word.length(); i++) {
             hidden += "*";
@@ -174,14 +173,14 @@ public class FinalHangMan { // Main class for the Hangman game
     }
 
 
-    // Gets a letter guess from the user
+
 public static char getletterguess() {
     while (true) {
         System.out.print("Guess a letter: ");
         String input = xScanner.nextLine().trim().toLowerCase();
 
 
-        // If the player entered nothing, ask again
+   
         if (input.isEmpty()) {
             System.out.println("Please enter a letter.");
             continue;
@@ -203,13 +202,13 @@ public static char getletterguess() {
 
 
     // Stores guessed letter in array
-    public static void xUpdateGuessedLetters(char g, char[] guessed, int i) {
+    public static void UpdateGuessedLetters(char g, char[] guessed, int i) {
         guessed[i] = g;
     }
 
 
     // Checks if the guessed letter exists in the word
-    public static boolean xIsGuessCorrect(String word, char g) {
+    public static boolean IsGuessCorrect(String word, char g) {
         return word.indexOf(g) >= 0;
     }
 

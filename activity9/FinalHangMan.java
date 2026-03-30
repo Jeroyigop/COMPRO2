@@ -1,269 +1,311 @@
 package activity9;
 
-import java.util.Scanner; // Import Scanner class to read user input
+import java.util.*;
+import java.io.*;
 
+public class FinalHangMan {
 
-public class FinalHangMan { // Main class for the Hangman game
-
-
-    // Scanner object used throughout the program
     public static Scanner xScanner = new Scanner(System.in);
 
+    static class User {
+        String username;
+        String password;
+        int score;
+
+        User(String u, String p, int s) {
+            username = u;
+            password = p;
+            score = s;
+        }
+    }
 
     public static void main(String[] args) {
 
+        String[] words = loadWordsFromFile("words.txt");
+        System.out.println("Words loaded: " + words.length);
 
-        // List of possible words for the game
-        String[] words = {
-            "noise","eager","sized","lying","plate","teeth","large","topic",
-            "stuck","queen","which","joint","crowd","sleep","aware","worst",
-            "audio","build","apart","stage","china","small","sixth","front",
-            "above","ahead","going","chief","force","earth","found","sight",
-            "minus","since","whose","spent","mouse","drama","whose","motor",
-            "total","thank","write","world","terry","badly","track","heart",
-            "phase","watch"
+        List<User> users = loadUsers("users.json");
+
+        User currentUser = null;
+
+        while (currentUser == null) {
+            currentUser = loginOrRegister(users);
+        }
+
+        int score = playgame(words, 6, 10);
+
+        currentUser.score += score;
+
+        saveUsers("users.json", users);
+
+        System.out.println("Total Score: " + currentUser.score);
+    }
+
+
+    public static String[] loadWordsFromFile(String filename) {
+        List<String> wordList = new ArrayList<>();
+
+        try {
+            InputStream is = FinalHangMan.class.getResourceAsStream("/" + filename);
+
+            if (is == null) {
+                System.out.println("words.txt not found in resources. Using defaults.");
+                return getDefaultWords();
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    wordList.add(line.trim().toLowerCase());
+                }
+            }
+
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println("Error reading words file.");
+        }
+
+        if (wordList.isEmpty()) {
+            System.out.println("words.txt is empty. Using defaults.");
+            return getDefaultWords();
+        }
+
+        return wordList.toArray(new String[0]);
+    }
+
+
+    public static String[] getDefaultWords() {
+        return new String[] {
+                "java", "computer", "hangman", "keyboard", "programming"
         };
-
-
-        // Arrays to store up to 50 player names and scores
-        String[] xPlayerNames = new String[50];
-        int[] xPlayerScores = new int[50];
-        int xPlayerCount = 0; // Keeps track of how many players played
-
-
-        // Loop allows multiple players to play one after another
-        do {
-            String xName = getplayername(); // Get player's name
-            int xScore = playgame(words, 6, 10); // Play the game
-
-
-            // Store player name and score
-            xPlayerNames[xPlayerCount] = xName;
-            xPlayerScores[xPlayerCount] = xScore;
-            xPlayerCount++;
-
-
-        } while (anothergame() && xPlayerCount < 50); // Continue if user says yes
-
-
-        // Show leaderboard after all players are done
-        xDisplayLeaderboard(xPlayerNames, xPlayerScores, xPlayerCount);
     }
 
 
+    public static List<User> loadUsers(String filename) {
+        List<User> users = new ArrayList<>();
 
-    // Asks the user for their name
-    public static String getplayername() {
-        System.out.print("Enter player name: ");
-        return xScanner.nextLine();
+        try {
+            File file = new File(filename);
+            if (!file.exists()) return users;
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.contains("username")) {
+                    String username = line.split(":")[1].replace("\"","").replace(",","");
+
+                    String passwordLine = reader.readLine().trim();
+                    String password = passwordLine.split(":")[1].replace("\"","").replace(",","");
+
+                    String scoreLine = reader.readLine().trim();
+                    int score = Integer.parseInt(scoreLine.split(":")[1].replace(",",""));
+
+                    users.add(new User(username, password, score));
+                }
+            }
+
+            reader.close();
+        } catch (Exception e) {
+            System.out.println("Error reading users file.");
+        }
+
+        return users;
+    }
+
+    public static void saveUsers(String filename, List<User> users) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+
+            writer.write("[\n");
+
+            for (int i = 0; i < users.size(); i++) {
+                User u = users.get(i);
+
+                writer.write("  {\"username\":\"" + u.username +
+                        "\",\"password\":\"" + u.password +
+                        "\",\"score\":" + u.score + "}");
+
+                if (i < users.size() - 1) writer.write(",");
+                writer.write("\n");
+            }
+
+            writer.write("]");
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("Error saving users.");
+        }
     }
 
 
-    // Asks if another player wants to play
-    public static boolean anothergame() {
-        System.out.print("Another player? (y/n): ");
-        return xScanner.nextLine().toLowerCase().charAt(0) == 'y';
+    public static User loginOrRegister(List<User> users) {
+        System.out.print("\n1. Sign In\n2. Sign Up\nChoose: ");
+
+        int choice;
+        try {
+            choice = Integer.parseInt(xScanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("Invalid input.");
+            return null;
+        }
+
+        if (choice == 1) {
+            System.out.print("Username: ");
+            String u = xScanner.nextLine();
+
+            System.out.print("Password: ");
+            String p = xScanner.nextLine();
+
+            for (User user : users) {
+                if (user.username.equals(u) && user.password.equals(p)) {
+                    System.out.println("Welcome back, " + u);
+                    return user;
+                }
+            }
+
+            System.out.println("Invalid login.");
+            return null;
+
+        } else {
+            System.out.print("New username: ");
+            String u = xScanner.nextLine();
+
+            for (User user : users) {
+                if (user.username.equals(u)) {
+                    System.out.println("Username already exists.");
+                    return null;
+                }
+            }
+
+            System.out.print("New password: ");
+            String p = xScanner.nextLine();
+
+            User newUser = new User(u, p, 0);
+            users.add(newUser);
+
+            System.out.println("Account created!");
+            return newUser;
+        }
     }
 
 
-   
-    // Main Hangman game logic
     public static int playgame(String[] words, int MaxIncorrect, int xMaxScore) {
 
+        String word = randomwords(words);
+        String HiddenWord = InitializeHiddenWord(word);
 
-        String word = randomwords(words); // Pick a random word
-        String HiddenWord = InitializeHiddenWord(word); // Hide the word with *
-
-
-        // Array to store letters already guessed
         char[] GuessedLetters = new char[26];
         int GuessIndex = 0;
 
+        int normalTriesLeft = MaxIncorrect;
+        int bonusTriesLeft = 0;
+        int score = 0;
+        boolean bonusActive = false;
 
-        int normalTriesLeft = MaxIncorrect; 
-        int bonusTriesLeft = 0;             
-        int score = 0;                     
-        boolean bonusActive = false;       
-
-
-        // Loop runs until word is guessed or player loses
         while (!fullyguessed(HiddenWord)) {
-
 
             System.out.println("\nWord: " + HiddenWord);
             System.out.println("Score: " + score);
 
-
-            // Show remaining tries
             if (!bonusActive) {
                 System.out.println("Tries left: " + normalTriesLeft);
             } else {
                 System.out.println("Bonus tries left: " + bonusTriesLeft);
             }
 
+            char guess = getletterguess();
 
-            char guess = getletterguess(); // Get player's letter guess
-
-
-            // Check if letter was already guessed
             if (alreadyinguessed(guess, GuessedLetters)) {
                 System.out.println("Already guessed!");
                 continue;
             }
 
+            if (GuessIndex < GuessedLetters.length) {
+                GuessedLetters[GuessIndex++] = guess;
+            }
 
-            // Store guessed letter
-            UpdateGuessedLetters(guess, GuessedLetters, GuessIndex++);
-
-
-            // Check if guess is correct
             if (IsGuessCorrect(word, guess)) {
-                HiddenWord = xUpdateHiddenWord(word, HiddenWord, guess);
-                score = Math.min(score + 1, xMaxScore); // Increase score
+                HiddenWord = UpdateHiddenWord(word, HiddenWord, guess);
+                score = Math.min(score + 1, xMaxScore);
                 System.out.println("Correct!");
             } else {
                 System.out.println("Wrong!");
-                score = Math.max(score - 1, 0); // Decrease score
+                score = Math.max(score - 1, 0);
 
-
-                // Handle tries
                 if (!bonusActive) {
                     normalTriesLeft--;
                     if (normalTriesLeft == 0) {
                         bonusActive = true;
                         bonusTriesLeft = 5;
-                        System.out.println("\nNormal tries over! 5 BONUS TRIES!");
+                        System.out.println("\nNormal tries over! BONUS TRIES!");
                     }
                 } else {
                     bonusTriesLeft--;
-                    if (bonusTriesLeft == 0) {
-                        break; // End game
-                    }
+                    if (bonusTriesLeft == 0) break;
                 }
             }
         }
 
-
-       if (!fullyguessed(HiddenWord)) {
-    System.out.println("\nGAME OVER!");
-    System.out.println("The word was: " + word);
-} else {
-    System.out.println("\nYOU WIN!");
-}
-
+        if (!fullyguessed(HiddenWord)) {
+            System.out.println("\nGAME OVER!");
+            System.out.println("The word was: " + word);
+        } else {
+            System.out.println("\nYOU WIN!");
+        }
 
         System.out.println("Final Score: " + score);
         return score;
     }
 
 
-
     public static String randomwords(String[] words) {
         return words[(int)(Math.random() * words.length)];
     }
 
-
-
     public static String InitializeHiddenWord(String word) {
-        String hidden = "";
-        for (int i = 0; i < word.length(); i++) {
-            hidden += "*";
-        }
-        return hidden;
+        StringBuilder hidden = new StringBuilder();
+        for (int i = 0; i < word.length(); i++) hidden.append("*");
+        return hidden.toString();
     }
 
+    public static char getletterguess() {
+        while (true) {
+            System.out.print("Guess a letter: ");
+            String input = xScanner.nextLine().trim().toLowerCase();
 
+            if (input.isEmpty() || !Character.isLetter(input.charAt(0))) {
+                System.out.println("Enter a valid letter.");
+                continue;
+            }
 
-public static char getletterguess() {
-    while (true) {
-        System.out.print("Guess a letter: ");
-        String input = xScanner.nextLine().trim().toLowerCase();
-
-
-   
-        if (input.isEmpty()) {
-            System.out.println("Please enter a letter.");
-            continue;
+            return input.charAt(0);
         }
-
-
-        return input.charAt(0);
     }
-}
 
-
-    // Checks if the letter was already guessed
     public static boolean alreadyinguessed(char g, char[] guessed) {
-        for (char c : guessed) {
-            if (c == g) return true;
-        }
+        for (char c : guessed) if (c == g) return true;
         return false;
     }
 
-
-    // Stores guessed letter in array
-    public static void UpdateGuessedLetters(char g, char[] guessed, int i) {
-        guessed[i] = g;
-    }
-
-
-    // Checks if the guessed letter exists in the word
     public static boolean IsGuessCorrect(String word, char g) {
         return word.indexOf(g) >= 0;
     }
 
-
-    // Reveals correct letters in the hidden word
-    public static String xUpdateHiddenWord(String word, String hidden, char g) {
+    public static String UpdateHiddenWord(String word, String hidden, char g) {
         char[] h = hidden.toCharArray();
         for (int i = 0; i < word.length(); i++) {
-            if (word.charAt(i) == g) {
-                h[i] = g;
-            }
+            if (word.charAt(i) == g) h[i] = g;
         }
         return new String(h);
     }
 
-
-    // Checks if the word has been fully guessed
     public static boolean fullyguessed(String hidden) {
         return !hidden.contains("*");
-    }
-
-
-    // ====================
-    // Displays leaderboard sorted by highest score
-    public static void xDisplayLeaderboard(String[] names, int[] scores, int count) {
-
-
-        // Sort players by score (descending)
-        for (int i = 0; i < count - 1; i++) {
-            for (int j = i + 1; j < count; j++) {
-                if (scores[j] > scores[i]) {
-                    int ts = scores[i];
-                    scores[i] = scores[j];
-                    scores[j] = ts;
-
-
-                    String tn = names[i];
-                    names[i] = names[j];
-                    names[j] = tn;
-                }
-            }
-        }
-
-
-        // Print leaderboard
-        System.out.println("\n=== LEADERBOARD ===");
-       for (int i = 0; i < count; i++) {
-
-
-    // Check if this player is tied with the previous one
-    if (i > 0 && scores[i] == scores[i - 1]) {
-        System.out.println((i + 1) + ". " + names[i] + " - " + scores[i] + " (TIED)");
-    } else {
-        System.out.println((i + 1) + ". " + names[i] + " - " + scores[i]);
-    }
-}
     }
 }

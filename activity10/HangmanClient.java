@@ -5,7 +5,7 @@ import java.net.*;
 
 public class HangmanClient {
     public static void main(String[] args) throws IOException {
-        String serverIP = "192.168.1.2"; // replace with server's IP
+        String serverIP = "localhost"; 
         int port = 5000;
 
         Socket socket = new Socket(serverIP, port);

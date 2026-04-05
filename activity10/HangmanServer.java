@@ -5,7 +5,7 @@ import java.net.*;
 
 public class HangmanServer {
     public static void main(String[] args) throws IOException {
-        io
+     
         int port = 5000;
         ServerSocket serverSocket = new ServerSocket(port);
         System.out.println("Waiting for client to connect...");
@@ -17,21 +17,21 @@ public class HangmanServer {
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
         BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
-        // Server chooses a word
+       
         System.out.println("Enter a word for the client to guess:");
         String word = console.readLine().toLowerCase();
         char[] wordChars = word.toCharArray();
         char[] display = new char[word.length()];
         for (int i = 0; i < display.length; i++) display[i] = '_';
 
-        int attempts = 6; // maximum wrong guesses
-        out.println(display.length); // send word length to client
+        int attempts = 6; 
+        out.println(display.length);
 
         while (attempts > 0 && new String(display).contains("_")) {
-            // Send current board state
+           
             out.println(new String(display) + "," + attempts);
 
-            // Receive guess from client
+           
             String guess = in.readLine();
             if (guess == null) break;
             guess = guess.toLowerCase();
@@ -47,7 +47,7 @@ public class HangmanServer {
             if (!correct) attempts--;
         }
 
-        // Game over
+      
         if (new String(display).equals(word)) {
             out.println("WIN," + word);
         } else {

@@ -1,0 +1,34 @@
+[
+  {
+    "username": "Jeroy",
+    "password": "jsontatum",
+    "score": 0,
+    "losses": 333,
+    "totalWins": 0,
+    "totalLosses": 0
+  },
+  {
+    "username": "ira",
+    "password": "jsonstatam",
+    "score": 0,
+    "losses": 33,
+    "totalWins": 0,
+    "totalLosses": 0
+  },
+  {
+    "username": "haha",
+    "password": "123",
+    "score": 4,
+    "losses": 3,
+    "totalWins": 1,
+    "totalLosses": 0
+  },
+  {
+    "username": "hehe",
+    "password": "123",
+    "score": 3,
+    "losses": 4,
+    "totalWins": 0,
+    "totalLosses": 1
+  }
+]

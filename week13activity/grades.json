@@ -1,0 +1,24 @@
+[
+    {
+        "grade": 15,
+        "remark": "Failed",
+        "id": 1
+    },
+    {
+        "grade": 95,
+        "remark": "Excellent",
+        "id": 1
+    },
+    {
+        "grade": 55,
+        "name": "Jeroy",
+        "remark": "Failed",
+        "id": 2510704
+    },
+    {
+        "grade": 94,
+        "name": "calacsan",
+        "remark": "Excellent",
+        "id": 321511
+    }
+]

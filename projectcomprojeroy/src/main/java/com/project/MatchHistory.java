@@ -1,46 +1,72 @@
 package com.project;
-import java.io.BufferedWriter;
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MatchHistory {
 
+    /**
+     * Append a match record to history.json as a JSON array of objects.
+     * If the file does not exist it will be created.
+     */
     public static void saveMatch(
             String player1,
             String player2,
             String winner) {
 
-        File file = new File("history.csv");
-        boolean writeHeader = !file.exists() || file.length() == 0;
+        File file = new File("history.json");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-            if (writeHeader) {
-                writer.write("player1,player2,winner");
-                writer.newLine();
+        String entry = "{" +
+                "\"player1\":\"" + escapeJson(player1) + "\"," +
+                "\"player2\":\"" + escapeJson(player2) + "\"," +
+                "\"winner\":\"" + escapeJson(winner) + "\"" +
+                "}";
+
+        try {
+            if (!file.exists() || file.length() == 0) {
+                String initial = "[" + entry + "]";
+                Files.write(Paths.get(file.getPath()), initial.getBytes(StandardCharsets.UTF_8));
+                return;
             }
 
-            writer.write(escapeCsv(player1) + "," +
-                    escapeCsv(player2) + "," +
-                    escapeCsv(winner));
+            String content = new String(Files.readAllBytes(Paths.get(file.getPath())), StandardCharsets.UTF_8).trim();
+            if (content.isEmpty()) {
+                String initial = "[" + entry + "]";
+                Files.write(Paths.get(file.getPath()), initial.getBytes(StandardCharsets.UTF_8));
+                return;
+            }
 
-            writer.newLine();
+            // naive, but sufficient for this small exercise: insert before final ']'
+            String newContent;
+            if (content.endsWith("]")) {
+                String body = content.substring(0, content.length() - 1).trim();
+                if (body.endsWith("[")) {
+                    newContent = body + entry + "]";
+                } else {
+                    newContent = body + "," + entry + "]";
+                }
+            } else {
+                // fallback: overwrite with single-entry array
+                newContent = "[" + entry + "]";
+            }
 
-        } catch(IOException e) {
+            Files.write(Paths.get(file.getPath()), newContent.getBytes(StandardCharsets.UTF_8));
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static String escapeCsv(String value) {
-        if (value == null) {
+    private static String escapeJson(String value) {
+        if (value == null)
             return "";
-        }
-
-        String escaped = value.replace("\"", "\"\"");
-        if (escaped.contains(",") || escaped.contains("\n") || escaped.contains("\r") || escaped.contains("\"")) {
-            return "\"" + escaped + "\"";
-        }
-
-        return escaped;
+        String v = value.replace("\\", "\\\\");
+        v = v.replace("\"", "\\\"");
+        v = v.replace("\n", "\\n");
+        v = v.replace("\r", "\\r");
+        return v;
     }
 }

@@ -1,5 +1,4 @@
 package com.project;
-
 import java.net.Socket;
 
 public class GameRoom {

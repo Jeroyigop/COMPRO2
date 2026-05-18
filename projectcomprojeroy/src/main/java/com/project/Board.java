@@ -1,7 +1,5 @@
 package com.project;
 
-import server.exceptions.InvalidMoveException;
-
 public class Board {
 
     private final char[][] grid;
@@ -9,8 +7,8 @@ public class Board {
     public Board(int size) {
         grid = new char[size][size];
 
-        for(int r = 0; r < size; r++) {
-            for(int c = 0; c < size; c++) {
+        for (int r = 0; r < size; r++) {
+            for (int c = 0; c < size; c++) {
                 grid[r][c] = '-';
             }
         }
@@ -19,7 +17,7 @@ public class Board {
     public synchronized void applyMove(int row, int col, char symbol)
             throws InvalidMoveException {
 
-        if(grid[row][col] != '-') {
+        if (grid[row][col] != '-') {
             throw new InvalidMoveException("Cell already occupied.");
         }
 
@@ -28,9 +26,9 @@ public class Board {
 
     public void display() {
 
-        for(char[] row : grid) {
+        for (char[] row : grid) {
 
-            for(char cell : row) {
+            for (char cell : row) {
                 System.out.print(cell + " ");
             }
 
